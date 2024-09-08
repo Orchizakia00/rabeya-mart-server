@@ -28,10 +28,24 @@ async function run() {
     // await client.connect();
 
     const productsCollection = client.db('rabeyaMart').collection('products');
+    const cartCollection = client.db('rabeyaMart').collection('cart');
 
+    // for all products
     app.get('/products', async (req, res) => {
-        const result = await productsCollection.find().toArray();
-        res.send(result);
+      const result = await productsCollection.find().toArray();
+      res.send(result);
+    })
+
+    // for cart items
+    app.get('/cart', async (req, res) => {
+      const result = await cartCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/cart', async (req, res) => {
+      const product = req.body;
+      await cartCollection.insertOne(product);
+      res.send(product);
     })
 
     // Send a ping to confirm a successful connection
@@ -46,9 +60,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('server is running');
+  res.send('server is running');
 })
 
-app.listen(port, () =>{
-    console.log(`server is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`);
 })
