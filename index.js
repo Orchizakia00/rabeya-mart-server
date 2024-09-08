@@ -43,10 +43,10 @@ async function run() {
     })
 
     app.post('/cart', async (req, res) => {
-      const product = req.body;
-      await cartCollection.insertOne(product);
-      res.send(product);
-    })
+      const data = req.body;
+      const result = await cartCollection.insertOne(data);
+      res.send(result);
+  })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
