@@ -29,6 +29,7 @@ async function run() {
 
     const productsCollection = client.db('rabeyaMart').collection('products');
     const cartCollection = client.db('rabeyaMart').collection('cart');
+    const userCollection = client.db('rabeyaMart').collection('users');
 
     // for all products
     app.get('/products', async (req, res) => {
@@ -46,7 +47,26 @@ async function run() {
       const data = req.body;
       const result = await cartCollection.insertOne(data);
       res.send(result);
+    })
+
+    // for users
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+          return res.send({ message: 'user already exist', insertedId: null })
+      };
+
+      const result = await userCollection.insertOne(user);
+      res.send(result);
   })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
