@@ -50,8 +50,8 @@ async function run() {
 
     app.get('/cart/:id', async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await cartCollection.findOne(query);
+        const query = { _id: new ObjectId(id) };
+        const result = await cartCollection.findOne(query);
       res.send(result);
     })
 
@@ -65,7 +65,7 @@ async function run() {
       const { id } = req.params;
       const query = { _id: new ObjectId(id) };
       const updateDoc = { $set: { quantity: quantity + 1 } };
-      const result = await taskCollection.updateOne(query, updateDoc);
+      const result = await cartCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
