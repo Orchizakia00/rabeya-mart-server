@@ -28,8 +28,9 @@ async function run() {
     // await client.connect();
 
     const productsCollection = client.db('rabeyaMart').collection('products');
-    const cartCollection = client.db('rabeyaMart').collection('cart');
     const userCollection = client.db('rabeyaMart').collection('users');
+    const cartCollection = client.db('rabeyaMart').collection('cart');
+    cartCollection.createIndex({ _id: 1, userEmail: 1 }, { unique: true })
 
     // for all products
     app.get('/products', async (req, res) => {
@@ -47,11 +48,27 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/cart/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.findOne(query);
+      res.send(result);
+    })
+
     app.post('/cart', async (req, res) => {
       const data = req.body;
       const result = await cartCollection.insertOne(data);
       res.send(result);
     })
+
+    app.put('/cart/:id', async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = { $set: { quantity: quantity + 1 } };
+      const result = await taskCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
 
     // for users
     app.get('/users', async (req, res) => {
