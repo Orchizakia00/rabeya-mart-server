@@ -50,8 +50,8 @@ async function run() {
 
     app.get('/cart/:id', async (req, res) => {
       const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await cartCollection.findOne(query);
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.findOne(query);
       res.send(result);
     })
 
@@ -61,13 +61,33 @@ async function run() {
       res.send(result);
     })
 
+    // app.put('/cart/:id', async (req, res) => {
+    //   const { id } = req.params;
+    //   const query = { _id: new ObjectId(id) };
+    //   const updateDoc = { $set: { quantity: quantity + 1 } };
+    //   const result = await cartCollection.updateOne(query, updateDoc);
+    //   res.send(result);
+    // });
+
     app.put('/cart/:id', async (req, res) => {
       const { id } = req.params;
-      const query = { _id: new ObjectId(id) };
-      const updateDoc = { $set: { quantity: quantity + 1 } };
-      const result = await cartCollection.updateOne(query, updateDoc);
-      res.send(result);
+      const { quantity } = req.body; // Extract the new quantity from the request body
+
+      try {
+        const query = { _id: new ObjectId(id) };
+        const updateDoc = { $set: { quantity: quantity } }; // Set the new quantity value
+        const result = await cartCollection.updateOne(query, updateDoc);
+
+        if (result.modifiedCount > 0) {
+          res.send({ success: true, message: "Cart updated successfully", result });
+        } else {
+          res.status(404).send({ success: false, message: "Cart item not found or already up to date" });
+        }
+      } catch (error) {
+        res.status(500).send({ success: false, message: "Failed to update cart", error });
+      }
     });
+
 
 
     // for users
