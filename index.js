@@ -27,10 +27,29 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    const productsCollection = client.db('rabeyaMart').collection('products');
     const userCollection = client.db('rabeyaMart').collection('users');
+    const productsCollection = client.db('rabeyaMart').collection('products');
     const cartCollection = client.db('rabeyaMart').collection('cart');
+    
     cartCollection.createIndex({ _id: 1, userEmail: 1 }, { unique: true })
+
+    // for user registration
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'user already exist', insertedId: null })
+      };
+
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    })
 
     // for all products
     app.get('/products', async (req, res) => {
